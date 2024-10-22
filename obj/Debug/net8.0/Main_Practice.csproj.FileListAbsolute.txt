@@ -1,0 +1,14 @@
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/bin/Debug/net8.0/Main_Practice
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/bin/Debug/net8.0/Main_Practice.deps.json
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/bin/Debug/net8.0/Main_Practice.runtimeconfig.json
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/bin/Debug/net8.0/Main_Practice.dll
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/bin/Debug/net8.0/Main_Practice.pdb
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/Main_Practice.GeneratedMSBuildEditorConfig.editorconfig
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/Main_Practice.AssemblyInfoInputs.cache
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/Main_Practice.AssemblyInfo.cs
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/Main_Practice.csproj.CoreCompileInputs.cache
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/Main_Practice.dll
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/refint/Main_Practice.dll
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/Main_Practice.pdb
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/Main_Practice.genruntimeconfig.cache
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/ref/Main_Practice.dll
