@@ -1,3 +1,8 @@
+using Main_Practice.Animals;
+using Main_Practice.Configuration;
+using Main_Practice.DATABASE;
+using Microsoft.EntityFrameworkCore;
+
 namespace Main_Practice.Tools;
 
 public static class TableGen
@@ -12,29 +17,163 @@ public static class TableGen
         return line;
     }
     
-    // Побудова форми для реєстрації або логіну
-    public static void DrawFrame(int formWidth, int formHeight)
+    // Побудова рамки
+    public static void DrawFrame(int formWidth, int formHeight, int x = 0, int y = 0, bool clear = true)
     {
-        Console.Clear();
+        if (clear)
+            Console.Clear();
         
         // Верхня границя форми
-        Console.SetCursorPosition((int) Cursor.X, (int) Cursor.Y);
+        Console.SetCursorPosition(Config.PosX +  x, Config.PosY + y);
         Console.WriteLine("\u250c" + Line(formWidth - 2) + "\u2510");
         
         // Бокові границі
-        for (int pos = (int) Cursor.Y; pos < formHeight + (int) Cursor.Y; pos++)
+        for (int pos = Config.PosY + y; pos < formHeight + Config.PosY; pos++)
         {
             // Ліва границя
-            Console.SetCursorPosition((int) Cursor.X, pos + 1);
+            Console.SetCursorPosition(Config.PosX + x, pos + 1);
             Console.Write("\u2502");
             
             // Права границя
-            Console.SetCursorPosition((int) Cursor.X + formWidth - 1, pos + 1);
+            Console.SetCursorPosition(Config.PosX + x + formWidth - 1, pos + 1);
             Console.Write("\u2502");
         }
         
         // Нижня границя
-        Console.SetCursorPosition((int) Cursor.X, (int) Cursor.Y + formHeight + 1);
+        Console.SetCursorPosition(Config.PosX + x, Config.PosY + y + formHeight + 1);
         Console.WriteLine("\u2514" + Line(formWidth - 2) + "\u2518");
+    }
+    
+    // Нативна функція для переміщення рамки (клавішами клавіатури) - яка повертає номер обраного елемента
+    public static int NavigateFrame<T>(int width, int height, DbSet<T> dbSet, int x = 0, int y = 0) where T : class, IAnimalClass
+    {
+        // Поточний елемент
+        var frame = 0;
+        
+        // Поточний елемент у межах форми
+        var currentPosInFrame = 1;
+        
+        // Поточна позиція прокручування
+        var scrollPosition = 0;
+        
+        // Заради оптимізації - зразу визначимо кількість наданих елементів
+        var items = dbSet.ToList();
+        var elCount = items.Count;
+
+        // Якщо елементів - 0 --> повернути 0
+        if (elCount == 0) return 0;
+        
+        // Визначення лямбда виразу дял отримання номера поточного елемента
+        var elNum = () => frame + 1 == elCount ? Text.Colored($"{frame + 1}", Color.Yellow) : Text.Colored($"{frame + 1}", Color.Green);
+        
+        // Малювання початкової позиції рамки (на першому елементі)
+        Console.SetCursorPosition(Config.PosX + x, Config.PosY + y + 1);
+        
+        Console.CursorVisible = false;
+        
+        // Вивід загальної кількості елементів
+        Console.SetCursorPosition(Config.PosX + 1, Config.PosY + 2);
+        Console.Write(Text.AlignCenter("[         /         ]", width));
+        Console.SetCursorPosition(Config.PosX + 14, Config.PosY + 2);
+        Console.Write(Text.AlignCenter(Text.Colored($"{elCount}", Color.Yellow), 9 + Text.ColoredDiff($"{elCount}", Color.Yellow)));
+        
+        // Цикл для переміщення
+        while (true)
+        {
+            // Малювання рамки на поточному елементі
+            DrawFrame(width, height, x, y + (currentPosInFrame - 1) * 2, false);
+            
+            // Вивід нумерації поточного елемента
+            Console.SetCursorPosition(Config.PosX + 4, Config.PosY + 2);
+            Console.Write(Text.AlignCenter(elNum(), 9 + Text.ColoredDiff(elNum(), Color.Green)));
+            
+            // Виділення поточного елементу зеленим
+            Console.SetCursorPosition(Config.PosX + x + 1, Config.PosY + y + (currentPosInFrame - 1) * 2 + 1);
+            Console.Write(Text.AlignCenter(Text.Colored(items[frame].Info, Color.Green), width - 2 + Text.ColoredDiff(items[frame].Info, Color.Green)));
+            
+            var keyInfo = Console.ReadKey(true);
+
+            switch (keyInfo.Key)
+            {
+                // Якщо натиснута клавіша Esc --> Вийти із циклу
+                case ConsoleKey.Escape:
+                    return 0;
+
+                // Якщо натиснута стрілочка вверх --> перемістити рамку до верхнього елемента
+                case ConsoleKey.UpArrow:
+                {
+                    if (currentPosInFrame > 1)
+                    {
+                        // Стирання рамки з попереднього елемента
+                        Clear(width, height + 2, x, y + (currentPosInFrame - 1) * 2);
+                        Console.SetCursorPosition(Config.PosX + x + 1, Config.PosY + y + (currentPosInFrame - 1) * 2 + 1);
+                        Console.Write(Text.AlignCenter(items[frame].Info, width - 2));
+                        
+                        // Понижуємо значення frame та позицію в рамці - як знак того, що ми перемістились на елемент вище
+                        frame--;
+                        currentPosInFrame--;
+                    }
+                    
+                    // Якщо вперлись вверх форми й вище ще є елементи - пролистуємо список
+                    if (currentPosInFrame == 1 && frame > 0)
+                    {
+                        // Стирання попереднього контенту
+                        Clear(width, Config.MaxElToForm * 2 + 1, 1, 3);
+                        
+                        AnimalYard.PrintItemList(items, 2, 4, 1, width - 2, --scrollPosition);
+                        
+                        // Збільшуємо значення frame - як знак того, що ми перемістились на елемент нище
+                        frame--;
+                    }
+                    
+                    break;
+                }
+                
+                // Якщо натиснута стрілочка вниз --> перемістити рамку до нижнього елемента
+                case ConsoleKey.DownArrow:
+                {
+                    // Якщо поточний елемент вибірки в межах форми, стерти вибірку попереднього елемента і збільшити значення frame
+                    if (currentPosInFrame <= Config.MaxElToForm - 1)
+                    {
+                        // Стирання рамки з попереднього елемента
+                        Clear(width, height, x, y + (currentPosInFrame - 1) * 2);
+                        Console.SetCursorPosition(Config.PosX + x + 1, Config.PosY + y + (currentPosInFrame - 1) * 2 + 1);
+                        Console.Write(Text.AlignCenter(items[frame].Info, width - 2));
+                        
+                        // Збільшуємо значення frame та позицію в рамці - як знак того, що ми перемістились на елемент нище
+                        frame++;
+                        currentPosInFrame++;
+                    }
+                    
+                    // Якщо вперлись в низ форми й нище ще є елементи -> пролистуємо список
+                    else if (currentPosInFrame == Config.MaxElToForm && frame < elCount - 1)
+                    {
+                        // Стирання попереднього контенту
+                        Clear(width, Config.MaxElToForm * 2 + 1, 1, 3);
+
+                        AnimalYard.PrintItemList(items, 2, 4, 1, width - 2, ++scrollPosition);
+                        
+                        // Збільшуємо значення frame - як знак того, що ми перемістились на елемент нище
+                        frame++;
+                    }
+                    
+                    break;
+                }
+
+                // Якщо натиснута клавіша "Enter" --> повернути порядковий номер обраного елемента
+                case ConsoleKey.Enter:
+                    return frame + 1;
+            }
+        }
+    }
+    
+    // Стирання рамки
+    public static void Clear(int frameWidth, int frameHeight, int posX, int posY)
+    {
+        for (int i = 0; i < frameHeight; i++)
+        {
+            Console.SetCursorPosition(Config.PosX + posX, Config.PosY + posY + i);
+            Console.Write(new string(' ', frameWidth));
+        }
     }
 }

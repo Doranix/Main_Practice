@@ -1,118 +1,102 @@
-using Main_Practice.Tools;
-
 namespace Main_Practice.Animals;
+
+using DATABASE;
+using Tools;
+using System.Text;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Worker : IAnimalClass
 {
-    private string _name;
-    private string _surName;
-    private string _middleName;
-    private DateTime _birthDay;
-    private Gender? _gender;
-    private readonly int _id;
-    private double _salary;
-    private int _workExperience;
-    private readonly int? _jobTitleId;
+    [Required][MaxLength(20)] public string Name {get; set;}
+    [Required][MaxLength(20)] public string SurName {get; set;}
+    [Required][MaxLength(20)] public string MiddleName {get; set;}
+    [Required] public DateTime BirthDay {get; set;}
+    [Required] public Gender? Gender {get; set;}
+    [Required] public double Salary {get; set;}
+    [Required] public int WorkExperience {get; set;}
+    [Required][ForeignKey("JobTitleId")] public int? JobTitleId {get; set;}
 
+    // Властивість для отримання ідентифікатора робітника
+    [Key] [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    
     // Конструктор без параметрів
     public Worker()
     {
-        _name = string.Empty;
-        _surName = string.Empty;
-        _middleName = string.Empty;
-        _birthDay = DateTime.Now;
-        _gender = null;
-        _id = AccessControl.Security.GenId;
-        _salary = 0;
-        _workExperience = 0;
-        _jobTitleId = null;
+        Name = string.Empty;
+        SurName = string.Empty;
+        MiddleName = string.Empty;
+        BirthDay = DateTime.Now;
+        Gender = null;
+        Salary = 0;
+        WorkExperience = 0;
+        JobTitleId = null;
     }
     
     // Конструктор із параметрами
     public Worker(string name, string surname, string middlename, string birthday, Gender gender, double salary,
         int workExperience, int jobTitleId)
     {
-        _name = name;
-        _surName = surname;
-        _middleName = middlename;
-        _birthDay = DateTime.Parse(birthday);
-        _gender = gender;
-        _id = AccessControl.Security.GenId;
-        _salary = salary;
-        _workExperience = workExperience;
-        _jobTitleId = jobTitleId;
+        Name = name;
+        SurName = surname;
+        MiddleName = middlename;
+        BirthDay = DateTime.Parse(birthday);
+        Gender = gender;
+        Salary = salary;
+        WorkExperience = workExperience;
+        JobTitleId = jobTitleId;
     }
     
     // Конструктор копіювання
     public Worker(Worker worker)
     {
-        _name = worker._name;
-        _surName = worker._surName;
-        _middleName = worker._middleName;
-        _birthDay = worker._birthDay;
-        _gender = worker._gender;
-        _id = worker._id;
-        _salary = worker._salary;
-        _workExperience = worker._workExperience;
-        _jobTitleId = worker._jobTitleId;
+        Name = worker.Name;
+        SurName = worker.SurName;
+        MiddleName = worker.MiddleName;
+        BirthDay = worker.BirthDay;
+        Gender = worker.Gender;
+        Salary = worker.Salary;
+        WorkExperience = worker.WorkExperience;
+        JobTitleId = worker.JobTitleId;
+        Id = worker.Id;
     }
     
     // Властивість для повного імені працівника
     public string FullName
     {
-        get => $"{_name} {_surName} {_middleName}";
+        get => $"{Name} {SurName} {MiddleName}";
         set
         {
-            string[] parts = value.Split(" ");
-            _name = parts[0];
-            _surName = parts[1];
-            _middleName = parts[2];
-        }
-    }
-    
-    // Властивість для дня народження робітника
-    public string BirthDay
-    {
-        get => _birthDay.ToString("dd/MM/yyyy");
-        set => _birthDay = DateTime.Parse(value);
-    }
-    
-    // Властивість для статі
-    public Gender Gender
-    {
-        get => _gender ?? Gender.Male;
-        set => _gender = value;
-    }
-    
-    // Властивість для отримання ідентифікатора робітника
-    public int Id
-    {
-        get => _id;
-    }
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("Повне імя робітника не може бути пустим, або містити одні пробіли !");
+            
+            string[] parts = value.Split(new[] {' ', ','}, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 3)
+            {
+                Name = parts[0].Trim();
+                SurName = parts[1].Trim();
+                MiddleName = parts[2].Trim();
+            }
 
-    // Властивість для заробітної плати робітника
-    public double Salary
-    {
-        get => _salary;
-        set => _salary = value;
-    }
-    
-    // Властивість для досвіду роботи працівника
-    public int WorkExperience
-    {
-        get => _workExperience;
-        set => _workExperience = value;
-    }
-    
-    // Властивість для коду посади
-    public int JobTitleId
-    {
-        get => _jobTitleId ?? -1;
+            else throw new ArgumentException("Невірний формат вхідних даних для імені робітника !");
+        }
     }
     
     // Властивість для виводу інформації про працівника
     public string Info
     {
-        get => $"{FullName}, Посада: {AnimalYard.Workers.Join(AnimalYard.JobTitles, worker => worker._jobTitleId, jobTitle => jobTitle.Id, (worker, jobtitle) => (worker._id, jobtitle.Info)).ToList().Find(el => _id == Id).Info}";
+        get
+        {
+            using var db = new DbController();
+            
+            StringBuilder info = new StringBuilder();
+            info.Append(FullName + " ");
+            
+            info.Append(db.Workers.Join(db.JobTitles, w => w.JobTitleId, jt => jt.Id, (w, jt) => 
+                new { id = w.Id, info = jt.Info }).FirstOrDefault(el => el.id == Id)?.info);
+            
+            return info.ToString();
+        }
     }
 }

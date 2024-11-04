@@ -1,40 +1,39 @@
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Main_Practice.Animals;
 
+using System.ComponentModel.DataAnnotations;
+
 public class JobTitle : IAnimalClass
 {
-    private string _title;
-    private int _id;
+    [Required]
+    [MaxLength(20)]
+    public string Title { get; set; }
+
+    // Властивість для ідентифікатора посади
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
     
     // Конструктор без параметрів
     public JobTitle()
     {
-        _title = string.Empty;
-        _id = AccessControl.Security.GenId;
+        Title = string.Empty;
     }
     
     // Конструктор з параметрами
     public JobTitle(string title)
     {
-        _title = title;
-        _id = AccessControl.Security.GenId;
+        Title = title;
     }
     
     // Конструктор копіювання
     public JobTitle(JobTitle jobTitle)
     {
-        _title = jobTitle._title;
-        _id = jobTitle._id;
+        Title = jobTitle.Title;
+        Id = jobTitle.Id;
     }
-    
-    // Властивість для ідентифікатора посади
-    public int Id => _id;
     
     // Властивість для отримання назви Посади
-    public string Info
-    {
-        get => _title;
-        set => _title = value;
-    }
+    public string Info => $"Посада: {Title}";
 }

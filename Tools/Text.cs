@@ -46,6 +46,12 @@ public static class Text
         return str;
     }
     
+    // Різниця довжини між звичайним текстом та кольоровим
+    public static int ColoredDiff(string str, Color color)
+    {
+        return Colored(str, color).Length - str.Length;
+    }
+    
     // Жирний текст
     public static string Bold(string str)
     {

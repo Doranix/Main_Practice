@@ -1,45 +1,58 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Main_Practice.Animals;
+
+using System.ComponentModel.DataAnnotations;
 
 public class AnimalName : IAnimalClass
 {
-    private string _name;
-    private string _ration;
-    private readonly int _id;
+    [Required][MaxLength(20)] public string Name { get; set; }
+    [Required][MaxLength(20)] public string Ration { get; set; }
 
+    // Властивість для ідентифікатора імені тварини
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
+    
     // Конструктор без параметрів
     public AnimalName()
     {
-        _name = string.Empty;
-        _ration = string.Empty;
-        _id = AccessControl.Security.GenId;
+        Name = string.Empty;
+        Ration = string.Empty;
     }
     
     // Конструктор з параметрами
     public AnimalName(string name, string ration)
     {
-        _name = name;
-        _ration = ration;
-        _id = AccessControl.Security.GenId;
+        Name = name;
+        Ration = ration;
     }
     
     // Конструктор копіювання
     public AnimalName(AnimalName animalName)
     {
-        _name = animalName._name;
-        _ration = animalName._ration;
-        _id = animalName._id;
+        Name = animalName.Name;
+        Ration = animalName.Ration;
+        Id = animalName.Id;
     }
     
     // Властивість для інформації про ім'я тварини
     public string Info
     {
-        get => $"{_name}, {_ration}";
-        set => (_name, _ration) = (value.Split(' ')[0], value.Split(' ')[1]);
-    }
-    
-    // Властивість для ідентифікатора імені тварини
-    public int Id
-    {
-        get => _id;
+        get => $"{Name}, {Ration}";
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("Вхідна інформація не може бути порожньою, або містити лише пробіли !");
+            
+            var infoParts = value.Split(new[] {' ', ','}, StringSplitOptions.RemoveEmptyEntries);
+            if (infoParts.Length == 2)
+            {
+                Name = infoParts[0].Trim();
+                Ration = infoParts[1].Trim();
+            }
+
+            else throw new ArgumentException("Невірний формат для запису інформації");
+        }
     }
 }
