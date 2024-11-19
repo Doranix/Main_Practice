@@ -1,13 +1,15 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Main_Practice.Animals;
 
+using System.ComponentModel.DataAnnotations.Schema;
+using Configuration;
+using DATABASE;
+using Tools;
 using System.ComponentModel.DataAnnotations;
 
-public class AnimalName : IAnimalClass
+public partial class AnimalName : IAnimalClass
 {
-    [Required][MaxLength(20)] public string Name { get; set; }
-    [Required][MaxLength(20)] public string Ration { get; set; }
+    [MaxLength(20)][Required] public string Name { get; set; }
+    [MaxLength(20)][Required] public string Ration { get; set; }
 
     // Властивість для ідентифікатора імені тварини
     [Key]
@@ -36,7 +38,10 @@ public class AnimalName : IAnimalClass
         Id = animalName.Id;
     }
     
+    
+    
     // Властивість для інформації про ім'я тварини
+    [NotMapped]
     public string Info
     {
         get => $"{Name}, {Ration}";

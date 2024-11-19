@@ -58,3 +58,4 @@
 /home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/bin/Debug/net8.0/runtimes/browser/lib/net8.0/System.Text.Encodings.Web.dll
 /home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/Main_Practice.csproj.AssemblyReference.cache
 /home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/Main_Pra.4B8B68AC.Up2Date
+/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/Debug/net8.0/Main_Practice.sourcelink.json

@@ -13,6 +13,7 @@
         "packagesPath": "/home/n1nd0r/.nuget/packages/",
         "outputPath": "/home/n1nd0r/RiderProjects/Main_Practice/Main_Practice/obj/",
         "projectStyle": "PackageReference",
+        "UsingMicrosoftNETSdk": false,
         "configFilePaths": [
           "/home/n1nd0r/.nuget/NuGet/NuGet.Config"
         ],

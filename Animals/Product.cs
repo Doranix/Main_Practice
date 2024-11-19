@@ -6,7 +6,7 @@ using DATABASE;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 
-public class Product : IAnimalClass
+public partial class Product : IAnimalClass
 {
     [ForeignKey("AnimalId")]
     [Required]
@@ -52,8 +52,8 @@ public class Product : IAnimalClass
         Id = product.Id;
     }
     
-    
     // Властивість для інформації про продукцію
+    [NotMapped]
     public string Info
     {
         get

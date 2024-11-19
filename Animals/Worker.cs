@@ -6,16 +6,16 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-public class Worker : IAnimalClass
+public partial class Worker : IAnimalClass
 {
-    [Required][MaxLength(20)] public string Name {get; set;}
-    [Required][MaxLength(20)] public string SurName {get; set;}
-    [Required][MaxLength(20)] public string MiddleName {get; set;}
+    [MaxLength(20)][Required] public string Name {get; set;}
+    [MaxLength(20)][Required] public string SurName {get; set;}
+    [MaxLength(20)][Required] public string MiddleName {get; set;}
     [Required] public DateTime BirthDay {get; set;}
     [Required] public Gender? Gender {get; set;}
-    [Required] public double Salary {get; set;}
-    [Required] public int WorkExperience {get; set;}
-    [Required][ForeignKey("JobTitleId")] public int? JobTitleId {get; set;}
+    [Required] public double Salary { get; set; }
+    [Required] public uint WorkExperience {get; set;}
+    [ForeignKey("JobTitleId")] [Required] public int? JobTitleId {get; set;}
 
     // Властивість для отримання ідентифікатора робітника
     [Key] [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -36,7 +36,7 @@ public class Worker : IAnimalClass
     
     // Конструктор із параметрами
     public Worker(string name, string surname, string middlename, string birthday, Gender gender, double salary,
-        int workExperience, int jobTitleId)
+        uint workExperience, int jobTitleId)
     {
         Name = name;
         SurName = surname;
@@ -63,6 +63,7 @@ public class Worker : IAnimalClass
     }
     
     // Властивість для повного імені працівника
+    [NotMapped]
     public string FullName
     {
         get => $"{Name} {SurName} {MiddleName}";
@@ -84,6 +85,7 @@ public class Worker : IAnimalClass
     }
     
     // Властивість для виводу інформації про працівника
+    [NotMapped]
     public string Info
     {
         get
@@ -94,7 +96,9 @@ public class Worker : IAnimalClass
             info.Append(FullName + " ");
             
             info.Append(db.Workers.Join(db.JobTitles, w => w.JobTitleId, jt => jt.Id, (w, jt) => 
-                new { id = w.Id, info = jt.Info }).FirstOrDefault(el => el.id == Id)?.info);
+                new { id = w.Id, info = jt.Info }).FirstOrDefault(el => el.id == Id)?.info + " ");
+
+            info.Append($"Стаж: {WorkExperience} ");
             
             return info.ToString();
         }

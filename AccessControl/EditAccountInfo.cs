@@ -1,3 +1,5 @@
+using Main_Practice.Menus;
+
 namespace Main_Practice.AccessControl;
 
 using Tools;
@@ -201,7 +203,7 @@ public static partial class Security
 
                                 // Повертаємо курсор до поля вводу і даємо запит на ввід імені
                                 Console.SetCursorPosition(Config.PosX + 8, Console.CursorTop - 1);
-                                (value, command) = Input.ReadName();
+                                (value, command) = Input.ReadStringValue();
                                 if (command == "Exit") return (account, false);
                                 account.Username = value ?? "None";
 
@@ -339,7 +341,7 @@ public static partial class Security
 
                                 // Вводимо нове ім'я (з перевіркою команди)
                                 Console.SetCursorPosition(Config.PosX + 8, Console.CursorTop - 4);
-                                (value, command) = Input.ReadName();
+                                (value, command) = Input.ReadStringValue();
                                 if (command == "Exit") return (account, false);
                                 account.Username = value ?? "None";
 
@@ -419,7 +421,7 @@ public static partial class Security
             case AccountType.Admin:
             {
                 // Визначаємо необхідну ширину і висоту рамки - щоб вмістити у неї всі елементи
-                var width = DbController.GetMaxLength(db.Accounts) + 4;
+                var width = DbController.GetMaxLength(db.Accounts.ToList()) + 4;
                 var height = Config.MaxElToForm * 2 + 3;
 
                 // Малюємо рамку
@@ -433,7 +435,7 @@ public static partial class Security
                 AnimalYard.PrintItemList(db.Accounts.ToList(), 2, 4, 1, width - 4);
 
                 // Викликаємо метод для вибірки елемента, при цьому зберігаючи індекс вибраного елемента
-                var index = TableGen.NavigateFrame(width - 2, 1, db.Accounts, 1, 3) - 1;
+                var index = TableGen.NavigateFrame(width - 2, 1, db.Accounts.ToList(), 1, 3) - 1;
 
                 // Для оптимізації нашої програми зразу витягнемо обраний акаунт із бази даних
                 var accountMod = db.Accounts.ElementAt(index); // Account Modified - Змінений акаунт
@@ -622,7 +624,7 @@ public static partial class Security
 
                                 // Повертаємо курсор до поля вводу і даємо запит на ввід імені
                                 Console.SetCursorPosition(Config.PosX + 13, Console.CursorTop - 1);
-                                (value, command) = Input.ReadName();
+                                (value, command) = Input.ReadStringValue();
                                 if (command == "Exit") return (account, false);
                                 accountMod.Username = value ?? "None";
 
@@ -766,7 +768,7 @@ public static partial class Security
 
                                 // Вводимо нове ім'я (з перевіркою команди)
                                 Console.SetCursorPosition(Config.PosX + 8, Console.CursorTop - 4);
-                                (value, command) = Input.ReadName();
+                                (value, command) = Input.ReadStringValue();
                                 if (command == "Exit") return (account, false);
                                 accountMod.Username = value ?? "None";
 

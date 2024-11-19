@@ -29,7 +29,7 @@ public static partial class Security
         Console.Write("Ім'я: ");
         
         // Ввід імені користувача
-        (value, command) = Input.ReadName();
+        (value, command) = Input.ReadStringValue();
         if (command == "Exit") return new Account("Quest", "quest", AccountType.Quest);
         var name = value ?? "None";
         

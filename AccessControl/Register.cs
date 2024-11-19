@@ -41,7 +41,7 @@ public static partial class Security
                 Console.Write(TableGen.Line(Config.FormWidth - 2));
         
                 Console.SetCursorPosition(Config.PosX + 10 + (Config.FormWidth / 3), Config.PosY + 5);
-                (value, command) = Input.ReadName();
+                (value, command) = Input.ReadStringValue();
                 if (command == "Exit") return;
                 newAccount.Username = value ?? "None";
                 
@@ -102,7 +102,7 @@ public static partial class Security
                 Console.Write(TableGen.Line(Config.FormWidth - 2));
                 
                 Console.SetCursorPosition(Config.PosX + 10 + (Config.FormWidth / 3), Config.PosY + 5);
-                (value, command) = Input.ReadName();
+                (value, command) = Input.ReadStringValue();
                 if (command == "Exit") return;
                 newAccount.Username = value ?? "None";
         

@@ -1,13 +1,15 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Main_Practice.Configuration;
+using Main_Practice.DATABASE;
+using Main_Practice.Tools;
 
 namespace Main_Practice.Animals;
 
 using System.ComponentModel.DataAnnotations;
 
-public class JobTitle : IAnimalClass
+public partial class JobTitle : IAnimalClass
 {
-    [Required]
-    [MaxLength(20)]
+    [MaxLength(20)][Required]
     public string Title { get; set; }
 
     // Властивість для ідентифікатора посади
@@ -35,5 +37,6 @@ public class JobTitle : IAnimalClass
     }
     
     // Властивість для отримання назви Посади
+    [NotMapped]
     public string Info => $"Посада: {Title}";
 }

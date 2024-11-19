@@ -1,18 +1,28 @@
-using Main_Practice.Animals;
-using Main_Practice.Configuration;
-using Main_Practice.DATABASE;
-using Microsoft.EntityFrameworkCore;
-
 namespace Main_Practice.Tools;
+
+using Menus;
+using System.Text;
+using Configuration;
+using Animals;
 
 public static class TableGen
 {
+    private static readonly Dictionary<(int, string), string> LineCache = new();
+    
     // Побудова лінії довільної довжини
     public static string Line(int length, string symbol = "\u2500")
     {
-        var line = "";
-        for (int i = 0; i < length; i++)
-            line += symbol;
+        var key = (length, symbol);
+
+        if (!LineCache.TryGetValue(key, out var line))
+        {
+            var builder = new StringBuilder();
+            for (int i = 0; i < length; i++)
+                builder.Append(symbol);
+
+            line = builder.ToString();
+            LineCache[key] = line;
+        }
 
         return line;
     }
@@ -45,7 +55,7 @@ public static class TableGen
     }
     
     // Нативна функція для переміщення рамки (клавішами клавіатури) - яка повертає номер обраного елемента
-    public static int NavigateFrame<T>(int width, int height, DbSet<T> dbSet, int x = 0, int y = 0) where T : class, IAnimalClass
+    public static int NavigateFrame<T>(int width, int height, List<T> items, int x = 0, int y = 0, bool navLeft = false, bool navRight = false) where T : class, IAnimalClass
     {
         // Поточний елемент
         var frame = 0;
@@ -57,25 +67,12 @@ public static class TableGen
         var scrollPosition = 0;
         
         // Заради оптимізації - зразу визначимо кількість наданих елементів
-        var items = dbSet.ToList();
         var elCount = items.Count;
 
         // Якщо елементів - 0 --> повернути 0
-        if (elCount == 0) return 0;
-        
-        // Визначення лямбда виразу дял отримання номера поточного елемента
-        var elNum = () => frame + 1 == elCount ? Text.Colored($"{frame + 1}", Color.Yellow) : Text.Colored($"{frame + 1}", Color.Green);
-        
-        // Малювання початкової позиції рамки (на першому елементі)
-        Console.SetCursorPosition(Config.PosX + x, Config.PosY + y + 1);
+        if (elCount == 0) return 1;
         
         Console.CursorVisible = false;
-        
-        // Вивід загальної кількості елементів
-        Console.SetCursorPosition(Config.PosX + 1, Config.PosY + 2);
-        Console.Write(Text.AlignCenter("[         /         ]", width));
-        Console.SetCursorPosition(Config.PosX + 14, Config.PosY + 2);
-        Console.Write(Text.AlignCenter(Text.Colored($"{elCount}", Color.Yellow), 9 + Text.ColoredDiff($"{elCount}", Color.Yellow)));
         
         // Цикл для переміщення
         while (true)
@@ -84,8 +81,7 @@ public static class TableGen
             DrawFrame(width, height, x, y + (currentPosInFrame - 1) * 2, false);
             
             // Вивід нумерації поточного елемента
-            Console.SetCursorPosition(Config.PosX + 4, Config.PosY + 2);
-            Console.Write(Text.AlignCenter(elNum(), 9 + Text.ColoredDiff(elNum(), Color.Green)));
+            ElNumberInfo(width - 2, x - 1, 1, $"{frame + 1}", $"{elCount}");
             
             // Виділення поточного елементу зеленим
             Console.SetCursorPosition(Config.PosX + x + 1, Config.PosY + y + (currentPosInFrame - 1) * 2 + 1);
@@ -93,6 +89,14 @@ public static class TableGen
             
             var keyInfo = Console.ReadKey(true);
 
+            // Обробка кнопок - Вправо, Вліво
+            if (navLeft)
+                if (keyInfo.Key == ConsoleKey.LeftArrow)
+                    return -1;
+            if (navRight)
+                if (keyInfo.Key == ConsoleKey.RightArrow)
+                    return -2;
+            
             switch (keyInfo.Key)
             {
                 // Якщо натиснута клавіша Esc --> Вийти із циклу
@@ -133,7 +137,7 @@ public static class TableGen
                 case ConsoleKey.DownArrow:
                 {
                     // Якщо поточний елемент вибірки в межах форми, стерти вибірку попереднього елемента і збільшити значення frame
-                    if (currentPosInFrame <= Config.MaxElToForm - 1)
+                    if (currentPosInFrame < Math.Min(Config.MaxElToForm, items.Count))
                     {
                         // Стирання рамки з попереднього елемента
                         Clear(width, height, x, y + (currentPosInFrame - 1) * 2);
@@ -166,6 +170,34 @@ public static class TableGen
             }
         }
     }
+    
+    
+    // Метод для виводу показника поточного елемента
+    private static void ElNumberInfo(int width, int formPosX, int y, string elNumber, string elCount)
+    {
+        // Загальна ширина рядка (включно з дужками, слешем та пробілами всередині)
+        int contentWidth = 3 + elNumber.Length + elCount.Length; // '[' + elNumber + '/' + elCount + ']'
+    
+        // Обчислення позиції X для центрування відносно "width"
+        int centerX = (width - contentWidth) / 2;
+        int globalPosX = Config.PosX + formPosX + centerX;
+
+        // Розміщення курсора для початку рядка
+        Console.SetCursorPosition(globalPosX, Config.PosY + y);
+    
+        Console.Write("[ ");
+
+        // Вивід відцентрованого номера елемента
+        Console.Write(Text.Colored(elNumber, elNumber == elCount ? Color.Yellow : Color.Green));
+
+        Console.Write(" / ");
+
+        // Вивід відцентрованого числа всіх елементів
+        Console.Write(Text.Colored(elCount, Color.Yellow));
+
+        Console.Write(" ]");
+    }
+    
     
     // Стирання рамки
     public static void Clear(int frameWidth, int frameHeight, int posX, int posY)
