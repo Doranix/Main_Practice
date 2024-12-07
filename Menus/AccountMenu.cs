@@ -3,6 +3,7 @@ namespace Main_Practice.Menus;
 using AccessControl;
 using Tools;
 using Configuration;
+using UI;
 
 public static partial class AnimalYard
 {
@@ -13,30 +14,30 @@ public static partial class AnimalYard
         {
             AccountType.Quest => new[]
             {
-                new [] { "Вийти із програми", "\u23fb" },
-                new [] { "Увійти", "\u27a1\ufe0f\ud83d\udc64" },
-                new [] { "Зареєструватись", "\u2795\ud83d\udc64" }
+                new [] { "Вийти із програми", Symbol.LeftTheProgram },
+                new [] { "Увійти", Symbol.Login },
+                new [] { "Зареєструватись", Symbol.Register }
             },
             
             AccountType.User => new[]
             {
-                new [] { "Повернутись назад", "\ud83d\udd19" },
-                new [] { "Увійти в інший аккаунт", "\ud83d\udd04\ud83d\udc64" },
-                new [] { "Зареєструвати новий акаунт", "\u2795\ud83d\udc64" },
-                new [] { "Отримати інформацію про акаунт", "\ud83d\udcc4\ud83d\udc64" },
-                new [] { "Змінити дані акаунта", "\u270f\ufe0f\ud83d\udc64" },
-                new [] { "Видалити акаунт", "\ud83d\uddd1\ud83d\udc64" }
+                new [] { "Повернутись назад", Symbol.ReturnBack },
+                new [] { "Увійти в інший аккаунт", Symbol.Login },
+                new [] { "Зареєструвати новий акаунт", Symbol.Register },
+                new [] { "Отримати інформацію про акаунт", Symbol.AccountInfo },
+                new [] { "Змінити дані акаунта", Symbol.EditAccountInfo },
+                new [] { "Видалити акаунт", Symbol.DeleteAccount }
             },
             
             AccountType.Admin => new[]
             {
-                new [] { "Повернутись назад", "\ud83d\udd19" },
-                new [] { "Увійти в інший аккаунт", "\ud83d\udd04\ud83d\udc64" },
-                new [] { "Зареєструвати новий акаунт", "\u2795\ud83d\udc64" },
-                new [] { "Отримати інформацію про акаунт", "\ud83d\udcc4\ud83d\udc64" },
-                new [] { "Змінити дані акаунта", "\u270f\ufe0f\ud83d\udc64" },
-                new [] { "Отримати список акаунтів у базі", "\ud83d\udcdc\ud83d\udc64" },
-                new [] { "Видалити акаунт", "\ud83d\uddd1\ud83d\udc64" }
+                new [] { "Повернутись назад", Symbol.ReturnBack },
+                new [] { "Увійти в інший аккаунт", Symbol.Login },
+                new [] { "Зареєструвати новий акаунт", Symbol.Register },
+                new [] { "Отримати інформацію про акаунт", Symbol.AccountInfo },
+                new [] { "Змінити дані акаунта", Symbol.EditAccountInfo },
+                new [] { "Отримати список акаунтів у базі", Symbol.AccountList },
+                new [] { "Видалити акаунт", Symbol.DeleteAccount }
             },
             
             _ => Array.Empty<string[]>()
